@@ -2,8 +2,13 @@ import React from 'react';
 import {StyleSheet, ScrollView, useWindowDimensions} from 'react-native';
 import {Button, Input, Layout, Text} from '@ui-kitten/components';
 import MyIcon from '../../components/ui/MyIcon';
+import {StackScreenProps} from '@react-navigation/stack';
+import {RootStackParamList} from '../../navigation/StackNavigator';
 
-export default function LoginScreen() {
+interface LoginScreenProps
+  extends StackScreenProps<RootStackParamList, 'LoginScreen'> {}
+
+export default function LoginScreen({navigation}: LoginScreenProps) {
   const {height} = useWindowDimensions();
 
   return (
@@ -60,7 +65,7 @@ export default function LoginScreen() {
           <Text
             status="primary"
             category="s1"
-            onPress={() => console.log('navigate to register')}>
+            onPress={() => navigation.navigate('RegisterScreen')}>
             Register
           </Text>
         </Layout>

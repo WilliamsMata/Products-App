@@ -9,14 +9,29 @@ import StackNavigator from './presentation/navigation/StackNavigator';
 
 export default function ProductsApp() {
   const colorScheme = useColorScheme();
+  const isDarkTheme = colorScheme === 'dark';
 
-  const theme = colorScheme === 'dark' ? eva.dark : eva.light;
+  const theme = isDarkTheme ? eva.dark : eva.light;
+  const backgroundColor = isDarkTheme
+    ? theme['color-basic-800']
+    : theme['color-basic-100'];
 
   return (
     <>
       <IconRegistry icons={EvaIconsPack} />
       <ApplicationProvider {...eva} theme={theme}>
-        <NavigationContainer>
+        <NavigationContainer
+          theme={{
+            dark: isDarkTheme,
+            colors: {
+              primary: theme['color-primary-500'],
+              background: backgroundColor,
+              card: theme['color-basic-100'],
+              text: theme['text-basic-color'],
+              border: theme['color-basic-800'],
+              notification: theme['color-primary-500'],
+            },
+          }}>
           <StackNavigator />
         </NavigationContainer>
       </ApplicationProvider>
