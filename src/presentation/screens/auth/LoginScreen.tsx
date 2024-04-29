@@ -1,6 +1,7 @@
 import React from 'react';
 import {StyleSheet, ScrollView, useWindowDimensions} from 'react-native';
 import {Button, Input, Layout, Text} from '@ui-kitten/components';
+import MyIcon from '../../components/ui/MyIcon';
 
 export default function LoginScreen() {
   const {height} = useWindowDimensions();
@@ -24,6 +25,7 @@ export default function LoginScreen() {
             placeholder="Email"
             keyboardType="email-address"
             autoCapitalize="none"
+            accessoryLeft={<MyIcon name="email-outline" />}
             style={styles.input}
           />
 
@@ -31,16 +33,21 @@ export default function LoginScreen() {
             placeholder="Password"
             autoCapitalize="none"
             secureTextEntry
+            accessoryLeft={<MyIcon name="lock-outline" />}
             style={styles.input}
           />
         </Layout>
 
         {/* Space */}
-        <Layout style={styles.separator20} />
+        <Layout style={styles.separator10} />
 
         {/* Button */}
         <Layout>
-          <Button onPress={() => console.log('login')}>Login</Button>
+          <Button
+            accessoryRight={<MyIcon name="arrow-forward-outline" white />}
+            onPress={() => console.log('login')}>
+            Login
+          </Button>
         </Layout>
 
         {/* Space */}
@@ -75,8 +82,8 @@ const styles = StyleSheet.create({
   input: {
     marginBottom: 20,
   },
-  separator20: {
-    height: 20,
+  separator10: {
+    height: 10,
   },
   separator50: {
     height: 50,
