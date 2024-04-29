@@ -1,4 +1,5 @@
 import React from 'react';
+import {API_URL} from '@env';
 import {StyleSheet, ScrollView, useWindowDimensions} from 'react-native';
 import {Button, Input, Layout, Text} from '@ui-kitten/components';
 import MyIcon from '../../components/ui/MyIcon';
@@ -10,6 +11,8 @@ interface LoginScreenProps
 
 export default function LoginScreen({navigation}: LoginScreenProps) {
   const {height} = useWindowDimensions();
+
+  console.log(API_URL);
 
   return (
     <Layout style={styles.container}>
