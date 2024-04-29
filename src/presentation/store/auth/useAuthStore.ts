@@ -11,7 +11,7 @@ export interface AuthState {
   login: (email: string, password: string) => Promise<boolean>;
 }
 
-export const useAuthStore = create<AuthState>((set, get) => ({
+export const useAuthStore = create<AuthState>(set => ({
   status: 'checking',
   token: null,
   user: null,

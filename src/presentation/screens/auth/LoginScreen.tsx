@@ -1,18 +1,41 @@
-import React from 'react';
-import {API_URL} from '@env';
-import {StyleSheet, ScrollView, useWindowDimensions} from 'react-native';
+import React, {useState} from 'react';
+import {StyleSheet, ScrollView, useWindowDimensions, Alert} from 'react-native';
 import {Button, Input, Layout, Text} from '@ui-kitten/components';
 import MyIcon from '../../components/ui/MyIcon';
 import {StackScreenProps} from '@react-navigation/stack';
 import {RootStackParamList} from '../../navigation/StackNavigator';
+import {useAuthStore} from '../../store/auth/useAuthStore';
 
 interface LoginScreenProps
   extends StackScreenProps<RootStackParamList, 'LoginScreen'> {}
 
 export default function LoginScreen({navigation}: LoginScreenProps) {
+  const login = useAuthStore(state => state.login);
+
+  const [isPosting, setIsPosting] = useState(false);
+
+  const [form, setForm] = useState({
+    email: '',
+    password: '',
+  });
+
   const {height} = useWindowDimensions();
 
-  console.log(API_URL);
+  const onLogin = async () => {
+    if (!form.email || !form.password) {
+      return;
+    }
+
+    setIsPosting(true);
+    const wasSuccessful = await login(form.email, form.password);
+    setIsPosting(false);
+
+    if (wasSuccessful) {
+      return;
+    }
+
+    Alert.alert('Error', 'Invalid credentials');
+  };
 
   return (
     <Layout style={styles.container}>
@@ -33,6 +56,8 @@ export default function LoginScreen({navigation}: LoginScreenProps) {
             placeholder="Email"
             keyboardType="email-address"
             autoCapitalize="none"
+            value={form.email}
+            onChangeText={email => setForm({...form, email})}
             accessoryLeft={<MyIcon name="email-outline" />}
             style={styles.input}
           />
@@ -41,6 +66,7 @@ export default function LoginScreen({navigation}: LoginScreenProps) {
             placeholder="Password"
             autoCapitalize="none"
             secureTextEntry
+            onChangeText={password => setForm({...form, password})}
             accessoryLeft={<MyIcon name="lock-outline" />}
             style={styles.input}
           />
@@ -53,7 +79,8 @@ export default function LoginScreen({navigation}: LoginScreenProps) {
         <Layout>
           <Button
             accessoryRight={<MyIcon name="arrow-forward-outline" white />}
-            onPress={() => console.log('login')}>
+            onPress={onLogin}
+            disabled={isPosting}>
             Login
           </Button>
         </Layout>
