@@ -6,6 +6,7 @@ import {ApplicationProvider, IconRegistry} from '@ui-kitten/components';
 import {EvaIconsPack} from '@ui-kitten/eva-icons';
 import {NavigationContainer} from '@react-navigation/native';
 import StackNavigator from './presentation/navigation/StackNavigator';
+import AuthProvider from './presentation/providers/AuthProvider';
 
 export default function ProductsApp() {
   const colorScheme = useColorScheme();
@@ -32,7 +33,9 @@ export default function ProductsApp() {
               notification: theme['color-primary-500'],
             },
           }}>
-          <StackNavigator />
+          <AuthProvider>
+            <StackNavigator />
+          </AuthProvider>
         </NavigationContainer>
       </ApplicationProvider>
     </>

@@ -17,8 +17,6 @@ const tesloApi = axios.create({
   },
 });
 
-// todo: add interceptors
-
 tesloApi.interceptors.request.use(async config => {
   const token = await StorageAdapter.getItem('token');
   if (token) {
