@@ -1,15 +1,42 @@
-import React from 'react';
-import {StyleSheet, ScrollView, useWindowDimensions} from 'react-native';
+import React, {useState} from 'react';
+import {StyleSheet, ScrollView, useWindowDimensions, Alert} from 'react-native';
 import {Button, Input, Layout, Text} from '@ui-kitten/components';
 import MyIcon from '../../components/ui/MyIcon';
 import {StackScreenProps} from '@react-navigation/stack';
 import {RootStackParamList} from '../../navigation/StackNavigator';
+import {useAuthStore} from '../../store/auth/useAuthStore';
 
 interface RegisterScreenProps
   extends StackScreenProps<RootStackParamList, 'RegisterScreen'> {}
 
 export default function RegisterScreen({navigation}: RegisterScreenProps) {
+  const register = useAuthStore(state => state.register);
+
+  const [isPosting, setIsPosting] = useState(false);
+
+  const [form, setForm] = useState({
+    email: '',
+    password: '',
+    fullName: '',
+  });
+
   const {height} = useWindowDimensions();
+
+  const onLogin = async () => {
+    if (!form.email || !form.password || !form.fullName) {
+      return;
+    }
+
+    setIsPosting(true);
+    const wasSuccessful = await register(form);
+    setIsPosting(false);
+
+    if (wasSuccessful) {
+      return;
+    }
+
+    Alert.alert('Error', 'Invalid credentials');
+  };
 
   return (
     <Layout style={styles.container}>
@@ -27,12 +54,16 @@ export default function RegisterScreen({navigation}: RegisterScreenProps) {
         {/* Inputs */}
         <Layout style={styles.inputsContainer}>
           <Input
+            value={form.fullName}
+            onChangeText={fullName => setForm({...form, fullName})}
             placeholder="Full Name"
             accessoryLeft={<MyIcon name="person-outline" />}
             style={styles.input}
           />
 
           <Input
+            value={form.email}
+            onChangeText={email => setForm({...form, email})}
             placeholder="Email"
             keyboardType="email-address"
             autoCapitalize="none"
@@ -41,6 +72,8 @@ export default function RegisterScreen({navigation}: RegisterScreenProps) {
           />
 
           <Input
+            value={form.password}
+            onChangeText={password => setForm({...form, password})}
             placeholder="Password"
             autoCapitalize="none"
             secureTextEntry
@@ -56,7 +89,8 @@ export default function RegisterScreen({navigation}: RegisterScreenProps) {
         <Layout>
           <Button
             accessoryRight={<MyIcon name="arrow-forward-outline" white />}
-            onPress={() => console.log('login')}>
+            onPress={onLogin}
+            disabled={isPosting}>
             Create account
           </Button>
         </Layout>
