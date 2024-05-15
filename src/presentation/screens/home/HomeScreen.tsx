@@ -1,8 +1,9 @@
 import React from 'react';
-import {Layout, Text} from '@ui-kitten/components';
-import {StyleSheet} from 'react-native';
 import {useQuery} from '@tanstack/react-query';
 import {getProductsByPage} from '../../../actions/products/get-products-by-page';
+import MainLayout from '../../layouts/MainLayout';
+import FullScreenLoader from '../../components/ui/FullScreenLoader';
+import ProductList from '../../components/products/ProductList';
 
 export default function HomeScreen() {
   const {isLoading, data: products = []} = useQuery({
@@ -12,16 +13,8 @@ export default function HomeScreen() {
   });
 
   return (
-    <Layout style={styles.container}>
-      <Text>{JSON.stringify(products, null, 2)}</Text>
-    </Layout>
+    <MainLayout title="TesloShop - Products" subTitle="Welcome to TesloShop">
+      {isLoading ? <FullScreenLoader /> : <ProductList products={products} />}
+    </MainLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
