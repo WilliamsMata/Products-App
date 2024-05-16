@@ -1,7 +1,6 @@
 import React from 'react';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Image} from 'react-native';
 import {Product} from '../../../domain/entities/product';
-import {Image} from 'react-native';
 import {Card, Text} from '@ui-kitten/components';
 import {FadeInImage} from '../ui/FadeInImage';
 
@@ -9,7 +8,7 @@ interface ProductCardProps {
   product: Product;
 }
 
-export default function ProductCard({product}: ProductCardProps) {
+const ProductCard = ({product}: ProductCardProps) => {
   return (
     <Card style={styles.card}>
       {product.images.length > 0 ? (
@@ -26,7 +25,7 @@ export default function ProductCard({product}: ProductCardProps) {
       </Text>
     </Card>
   );
-}
+};
 
 const styles = StyleSheet.create({
   card: {
@@ -47,3 +46,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+const areProductsEqual = (
+  prevProps: ProductCardProps,
+  nextProps: ProductCardProps,
+) => {
+  // Deep comparison to check for changes in product properties
+  return (
+    prevProps.product.id === nextProps.product.id &&
+    prevProps.product.title === nextProps.product.title &&
+    JSON.stringify(prevProps.product.images) ===
+      JSON.stringify(nextProps.product.images)
+  );
+};
+
+export default React.memo(ProductCard, areProductsEqual);
