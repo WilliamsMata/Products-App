@@ -6,11 +6,17 @@ export const updateCreateProduct = (product: Partial<Product>) => {
   product.stock = isNaN(Number(product.stock)) ? 0 : Number(product.stock);
   product.price = isNaN(Number(product.price)) ? 0 : Number(product.price);
 
-  if (product.id) {
+  if (product.id && product.id !== 'new') {
     return updateProduct(product);
+  } else {
+    return createProduct(product);
   }
+};
 
-  throw new Error('Not implemented');
+const prepareImages = (images: string[]) => {
+  // TODO: Check files
+
+  return images.map(image => image.split('/').pop());
 };
 
 const updateProduct = async (product: Partial<Product>) => {
@@ -33,8 +39,23 @@ const updateProduct = async (product: Partial<Product>) => {
   }
 };
 
-const prepareImages = (images: string[]) => {
-  // TODO: Check files
+const createProduct = async (product: Partial<Product>) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- We don't need the id
+  const {id, images = [], ...rest} = product;
 
-  return images.map(image => image.split('/').pop());
+  try {
+    const preparedImages = prepareImages(images);
+
+    const {data} = await tesloApi.post('/products', {
+      images: preparedImages,
+      ...rest,
+    });
+
+    return data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      console.error(error.response?.data);
+    }
+    throw new Error('Error creating product');
+  }
 };

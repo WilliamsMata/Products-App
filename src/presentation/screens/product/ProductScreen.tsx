@@ -1,5 +1,5 @@
 import React, {useRef} from 'react';
-import {FlatList, ScrollView, StyleSheet} from 'react-native';
+import {FlatList, Image, ScrollView, StyleSheet} from 'react-native';
 import type {StackScreenProps} from '@react-navigation/stack';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {Formik} from 'formik';
@@ -58,16 +58,23 @@ export default function ProductScreen({route}: ProductScreenProps) {
       {({values, handleChange, handleSubmit, setFieldValue}) => (
         <MainLayout title={values.title} subTitle={`Price: ${values.price}`}>
           <ScrollView style={styles.scrollView}>
-            <Layout>
-              <FlatList
-                data={values.images}
-                horizontal
-                keyExtractor={item => item}
-                showsHorizontalScrollIndicator={false}
-                renderItem={({item}) => (
-                  <FadeInImage uri={item} style={styles.imageList} />
-                )}
-              />
+            <Layout style={styles.imageContainer}>
+              {values.images.length === 0 ? (
+                <Image
+                  source={require('../../../assets/no-product-image.png')}
+                  style={styles.imageList}
+                />
+              ) : (
+                <FlatList
+                  data={values.images}
+                  horizontal
+                  keyExtractor={item => item}
+                  showsHorizontalScrollIndicator={false}
+                  renderItem={({item}) => (
+                    <FadeInImage uri={item} style={styles.imageList} />
+                  )}
+                />
+              )}
             </Layout>
 
             <Layout style={styles.container1}>
@@ -179,6 +186,11 @@ export default function ProductScreen({route}: ProductScreenProps) {
 const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
+  },
+  imageContainer: {
+    marginVertical: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   imageList: {
     width: 300,

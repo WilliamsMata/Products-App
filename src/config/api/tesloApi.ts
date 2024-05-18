@@ -10,8 +10,6 @@ export const API_URL =
     ? API_URL_IOS
     : API_URL_ANDROID;
 
-console.log({API_URL});
-
 const tesloApi = axios.create({
   baseURL: API_URL,
   headers: {
