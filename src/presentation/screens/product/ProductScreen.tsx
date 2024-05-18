@@ -1,5 +1,5 @@
 import React, {useRef} from 'react';
-import {FlatList, Image, ScrollView, StyleSheet} from 'react-native';
+import {ScrollView, StyleSheet} from 'react-native';
 import type {StackScreenProps} from '@react-navigation/stack';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {Formik} from 'formik';
@@ -8,19 +8,15 @@ import {
   ButtonGroup,
   Input,
   Layout,
-  Text,
   useTheme,
 } from '@ui-kitten/components';
 import MainLayout from '../../layouts/MainLayout';
 import type {RootStackParamList} from '../../navigation/StackNavigator';
-import {getProductById} from '../../../actions/products/get-product-by-id';
-import {FadeInImage} from '../../components/ui/FadeInImage';
-import {Gender, type Product, Size} from '../../../domain/entities/product';
+import {getProductById, updateCreateProduct} from '../../../actions/products';
+import {type Product} from '../../../domain/entities/product';
 import MyIcon from '../../components/ui/MyIcon';
-import {updateCreateProduct} from '../../../actions/products/update-create-product';
-
-const sizes: Size[] = [Size.Xs, Size.S, Size.M, Size.L, Size.Xl, Size.Xxl];
-const genders: Gender[] = [Gender.Kid, Gender.Men, Gender.Women, Gender.Unisex];
+import ProductImages from '../../components/products/ProductImages';
+import {genders, sizes} from '../../../config/constants/product.constant';
 
 interface ProductScreenProps
   extends StackScreenProps<RootStackParamList, 'ProductScreen'> {}
@@ -59,22 +55,7 @@ export default function ProductScreen({route}: ProductScreenProps) {
         <MainLayout title={values.title} subTitle={`Price: ${values.price}`}>
           <ScrollView style={styles.scrollView}>
             <Layout style={styles.imageContainer}>
-              {values.images.length === 0 ? (
-                <Image
-                  source={require('../../../assets/no-product-image.png')}
-                  style={styles.imageList}
-                />
-              ) : (
-                <FlatList
-                  data={values.images}
-                  horizontal
-                  keyExtractor={item => item}
-                  showsHorizontalScrollIndicator={false}
-                  renderItem={({item}) => (
-                    <FadeInImage uri={item} style={styles.imageList} />
-                  )}
-                />
-              )}
+              <ProductImages images={values.images} />
             </Layout>
 
             <Layout style={styles.container1}>
@@ -173,8 +154,6 @@ export default function ProductScreen({route}: ProductScreenProps) {
               Save
             </Button>
 
-            <Text>{JSON.stringify(values, null, 2)}</Text>
-
             <Layout style={styles.footerSeparator} />
           </ScrollView>
         </MainLayout>
@@ -191,11 +170,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  imageList: {
-    width: 300,
-    height: 300,
-    marginHorizontal: 7,
   },
   container1: {
     marginHorizontal: 10,
