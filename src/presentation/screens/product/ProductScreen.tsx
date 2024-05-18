@@ -1,7 +1,8 @@
 import React, {useRef} from 'react';
 import {FlatList, ScrollView, StyleSheet} from 'react-native';
 import type {StackScreenProps} from '@react-navigation/stack';
-import {useQuery} from '@tanstack/react-query';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {Formik} from 'formik';
 import {
   Button,
   ButtonGroup,
@@ -14,9 +15,9 @@ import MainLayout from '../../layouts/MainLayout';
 import type {RootStackParamList} from '../../navigation/StackNavigator';
 import {getProductById} from '../../../actions/products/get-product-by-id';
 import {FadeInImage} from '../../components/ui/FadeInImage';
-import {Gender, Size} from '../../../domain/entities/product';
+import {Gender, type Product, Size} from '../../../domain/entities/product';
 import MyIcon from '../../components/ui/MyIcon';
-import {Formik} from 'formik';
+import {updateCreateProduct} from '../../../actions/products/update-create-product';
 
 const sizes: Size[] = [Size.Xs, Size.S, Size.M, Size.L, Size.Xl, Size.Xxl];
 const genders: Gender[] = [Gender.Kid, Gender.Men, Gender.Women, Gender.Unisex];
@@ -28,6 +29,8 @@ export default function ProductScreen({route}: ProductScreenProps) {
   const productIdRef = useRef(route.params.productId);
   const productId = productIdRef.current;
 
+  const queryClient = useQueryClient();
+
   const theme = useTheme();
 
   const {data: product, isLoading} = useQuery({
@@ -35,12 +38,23 @@ export default function ProductScreen({route}: ProductScreenProps) {
     queryFn: () => getProductById(productId),
   });
 
+  const mutation = useMutation({
+    mutationFn: (data: Product) =>
+      updateCreateProduct({...data, id: productId}),
+    onSuccess(data: Product) {
+      productIdRef.current = data.id;
+      queryClient.invalidateQueries({queryKey: ['products', 'infinite']});
+      queryClient.invalidateQueries({queryKey: ['product', data.id]});
+      // queryClient.setQueryData(['product', data.id], data);
+    },
+  });
+
   if (isLoading || !product) {
     return <MainLayout title="Loading..." />;
   }
 
   return (
-    <Formik initialValues={product} onSubmit={values => console.log(values)}>
+    <Formik initialValues={product} onSubmit={mutation.mutate}>
       {({values, handleChange, handleSubmit, setFieldValue}) => (
         <MainLayout title={values.title} subTitle={`Price: ${values.price}`}>
           <ScrollView style={styles.scrollView}>
@@ -82,12 +96,14 @@ export default function ProductScreen({route}: ProductScreenProps) {
             <Layout style={styles.container2}>
               <Input
                 label="Price"
+                keyboardType="number-pad"
                 style={styles.input2}
                 value={values.price.toString()}
                 onChangeText={handleChange('price')}
               />
               <Input
                 label="Stock"
+                keyboardType="number-pad"
                 style={styles.input2}
                 value={values.stock.toString()}
                 onChangeText={handleChange('stock')}

@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
-import type {Product} from '../../../domain/entities/product';
-import {Layout, List} from '@ui-kitten/components';
 import {RefreshControl, StyleSheet} from 'react-native';
+import {useQueryClient} from '@tanstack/react-query';
+import {Layout, List} from '@ui-kitten/components';
+import type {Product} from '../../../domain/entities/product';
 import ProductCard from './ProductCard';
 
 interface ProductListProps {
@@ -15,10 +16,12 @@ export default function ProductList({
 }: ProductListProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  const queryClient = useQueryClient();
+
   const onPullToRefresh = async () => {
     setIsRefreshing(true);
-    // sleep 2 seconds
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise(resolve => setTimeout(resolve, 200));
+    queryClient.invalidateQueries({queryKey: ['products', 'infinite']});
     setIsRefreshing(false);
   };
 
