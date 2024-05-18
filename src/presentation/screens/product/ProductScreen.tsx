@@ -7,6 +7,7 @@ import {
   ButtonGroup,
   Input,
   Layout,
+  Text,
   useTheme,
 } from '@ui-kitten/components';
 import MainLayout from '../../layouts/MainLayout';
@@ -15,11 +16,11 @@ import {getProductById} from '../../../actions/products/get-product-by-id';
 import {FadeInImage} from '../../components/ui/FadeInImage';
 import {Gender, Size} from '../../../domain/entities/product';
 import MyIcon from '../../components/ui/MyIcon';
+import {Formik} from 'formik';
 
 const sizes: Size[] = [Size.Xs, Size.S, Size.M, Size.L, Size.Xl, Size.Xxl];
 const genders: Gender[] = [Gender.Kid, Gender.Men, Gender.Women, Gender.Unisex];
 
-// type of product screen extends RootStackParamList
 interface ProductScreenProps
   extends StackScreenProps<RootStackParamList, 'ProductScreen'> {}
 
@@ -39,95 +40,123 @@ export default function ProductScreen({route}: ProductScreenProps) {
   }
 
   return (
-    <MainLayout title="Product" subTitle={`Price: ${product.price}`}>
-      <ScrollView style={styles.scrollView}>
-        <Layout>
-          <FlatList
-            data={product.images}
-            horizontal
-            keyExtractor={item => item}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({item}) => (
-              <FadeInImage uri={item} style={styles.imageList} />
-            )}
-          />
-        </Layout>
+    <Formik initialValues={product} onSubmit={values => console.log(values)}>
+      {({values, handleChange, handleSubmit, setFieldValue}) => (
+        <MainLayout title={values.title} subTitle={`Price: ${values.price}`}>
+          <ScrollView style={styles.scrollView}>
+            <Layout>
+              <FlatList
+                data={values.images}
+                horizontal
+                keyExtractor={item => item}
+                showsHorizontalScrollIndicator={false}
+                renderItem={({item}) => (
+                  <FadeInImage uri={item} style={styles.imageList} />
+                )}
+              />
+            </Layout>
 
-        <Layout style={styles.container1}>
-          <Input label="Title" value={product.title} style={styles.input} />
-          <Input label="Slug" value={product.slug} style={styles.input} />
-          <Input
-            label="Description"
-            value={product.description}
-            multiline
-            numberOfLines={5}
-            style={styles.input}
-          />
-        </Layout>
+            <Layout style={styles.container1}>
+              <Input
+                label="Title"
+                style={styles.input}
+                value={values.title}
+                onChangeText={handleChange('title')}
+              />
+              <Input
+                label="Slug"
+                style={styles.input}
+                value={values.slug}
+                onChangeText={handleChange('slug')}
+              />
+              <Input
+                label="Description"
+                multiline
+                numberOfLines={5}
+                style={styles.input}
+                value={values.description}
+                onChangeText={handleChange('description')}
+              />
+            </Layout>
 
-        <Layout style={styles.container2}>
-          <Input
-            label="Price"
-            value={product.price.toString()}
-            style={styles.input2}
-          />
-          <Input
-            label="Stock"
-            value={product.stock.toString()}
-            style={styles.input2}
-          />
-        </Layout>
+            <Layout style={styles.container2}>
+              <Input
+                label="Price"
+                style={styles.input2}
+                value={values.price.toString()}
+                onChangeText={handleChange('price')}
+              />
+              <Input
+                label="Stock"
+                style={styles.input2}
+                value={values.stock.toString()}
+                onChangeText={handleChange('stock')}
+              />
+            </Layout>
 
-        <ButtonGroup
-          style={styles.buttonGroup}
-          size="small"
-          appearance="outline">
-          {sizes.map((size, index) => (
+            <ButtonGroup
+              style={styles.buttonGroup}
+              size="small"
+              appearance="outline">
+              {sizes.map((size, index) => (
+                <Button
+                  key={index}
+                  onPress={() =>
+                    setFieldValue(
+                      'sizes',
+                      values.sizes.includes(size)
+                        ? values.sizes.filter(s => s !== size)
+                        : [...values.sizes, size],
+                    )
+                  }
+                  style={[
+                    styles.sizesButton,
+                    {
+                      backgroundColor: values.sizes.includes(size)
+                        ? theme['color-primary-200']
+                        : undefined,
+                    },
+                  ]}>
+                  {size}
+                </Button>
+              ))}
+            </ButtonGroup>
+
+            <ButtonGroup
+              style={styles.buttonGroup}
+              size="small"
+              appearance="outline">
+              {genders.map((gender, index) => (
+                <Button
+                  key={index}
+                  onPress={() => setFieldValue('gender', gender)}
+                  style={[
+                    styles.sizesButton,
+                    {
+                      backgroundColor: values.gender.startsWith(gender)
+                        ? theme['color-primary-200']
+                        : undefined,
+                    },
+                  ]}>
+                  {gender}
+                </Button>
+              ))}
+            </ButtonGroup>
+
             <Button
-              key={index}
-              style={[
-                styles.sizesButton,
-                {
-                  backgroundColor: true
-                    ? theme['color-primary-200']
-                    : undefined,
-                },
-              ]}>
-              {size}
+              accessoryLeft={<MyIcon name="save-outline" white />}
+              onPress={() => handleSubmit()}
+              style={styles.saveButton}>
+              Save
             </Button>
-          ))}
-        </ButtonGroup>
 
-        <ButtonGroup
-          style={styles.buttonGroup}
-          size="small"
-          appearance="outline">
-          {genders.map((gender, index) => (
-            <Button
-              key={index}
-              style={[
-                styles.sizesButton,
-                {
-                  backgroundColor: true
-                    ? theme['color-primary-200']
-                    : undefined,
-                },
-              ]}>
-              {gender}
-            </Button>
-          ))}
-        </ButtonGroup>
+            <Text>{JSON.stringify(values, null, 2)}</Text>
 
-        <Button
-          accessoryLeft={<MyIcon name="save-outline" white />}
-          onPress={() => console.log('Save')}
-          style={styles.saveButton}>
-          Save
-        </Button>
-
-        <Layout style={styles.footerSeparator} />
-      </ScrollView>
-    </MainLayout>
+            <Layout style={styles.footerSeparator} />
+          </ScrollView>
+        </MainLayout>
+      )}
+    </Formik>
   );
 }
 
