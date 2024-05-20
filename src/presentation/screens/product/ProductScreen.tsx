@@ -158,7 +158,8 @@ export default function ProductScreen({route}: ProductScreenProps) {
             <Button
               accessoryLeft={<MyIcon name="save-outline" white />}
               onPress={() => handleSubmit()}
-              style={styles.saveButton}>
+              style={styles.saveButton}
+              disabled={mutation.isPending}>
               Save
             </Button>
 
