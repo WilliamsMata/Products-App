@@ -17,7 +17,6 @@ export default function HomeScreen() {
     staleTime: 1000 * 60 * 60, // 1 hour
     initialPageParam: 0,
     queryFn: async params => {
-      console.log(params);
       return await getProductsByPage(params.pageParam);
     },
     getNextPageParam: (lastPage, allPages) => {
