@@ -17,6 +17,7 @@ import type {Product} from '../../../domain/entities/product';
 import MyIcon from '../../components/ui/MyIcon';
 import ProductImages from '../../components/products/ProductImages';
 import {genders, sizes} from '../../../config/constants/product.constant';
+import {CameraAdapter} from '../../../config/adapters/camera-adapter';
 
 interface ProductScreenProps
   extends StackScreenProps<RootStackParamList, 'ProductScreen'> {}
@@ -55,7 +56,10 @@ export default function ProductScreen({route}: ProductScreenProps) {
         <MainLayout
           title={values.title}
           subTitle={`Price: ${values.price}`}
-          rightAction={() => console.log('Hola mundo')}
+          rightAction={async () => {
+            const photos = await CameraAdapter.takePicture();
+            setFieldValue('images', [...values.images, ...photos]);
+          }}
           rightActionIcon="camera-outline">
           <ScrollView style={styles.scrollView}>
             <Layout style={styles.imageContainer}>
