@@ -57,7 +57,7 @@ export default function ProductScreen({route}: ProductScreenProps) {
           title={values.title}
           subTitle={`Price: ${values.price}`}
           rightAction={async () => {
-            const photos = await CameraAdapter.takePicture();
+            const photos = await CameraAdapter.getPicturesFromLibraries();
             setFieldValue('images', [...values.images, ...photos]);
           }}
           rightActionIcon="camera-outline">
