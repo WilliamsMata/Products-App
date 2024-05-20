@@ -13,7 +13,7 @@ import {
 import MainLayout from '../../layouts/MainLayout';
 import type {RootStackParamList} from '../../navigation/StackNavigator';
 import {getProductById, updateCreateProduct} from '../../../actions/products';
-import {type Product} from '../../../domain/entities/product';
+import type {Product} from '../../../domain/entities/product';
 import MyIcon from '../../components/ui/MyIcon';
 import ProductImages from '../../components/products/ProductImages';
 import {genders, sizes} from '../../../config/constants/product.constant';
@@ -52,7 +52,11 @@ export default function ProductScreen({route}: ProductScreenProps) {
   return (
     <Formik initialValues={product} onSubmit={mutation.mutate}>
       {({values, handleChange, handleSubmit, setFieldValue}) => (
-        <MainLayout title={values.title} subTitle={`Price: ${values.price}`}>
+        <MainLayout
+          title={values.title}
+          subTitle={`Price: ${values.price}`}
+          rightAction={() => console.log('Hola mundo')}
+          rightActionIcon="camera-outline">
           <ScrollView style={styles.scrollView}>
             <Layout style={styles.imageContainer}>
               <ProductImages images={values.images} />
