@@ -60,7 +60,7 @@ export default function ProductScreen({route}: ProductScreenProps) {
             const photos = await CameraAdapter.getPicturesFromLibraries();
             setFieldValue('images', [...values.images, ...photos]);
           }}
-          rightActionIcon="camera-outline">
+          rightActionIcon="image-outline">
           <ScrollView style={styles.scrollView}>
             <Layout style={styles.imageContainer}>
               <ProductImages images={values.images} />
